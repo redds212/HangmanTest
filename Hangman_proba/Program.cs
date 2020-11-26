@@ -61,8 +61,7 @@ namespace Hangman_proba
             return result;
         }
 
-
-        static void Main(string[] args)
+        static void Game()
         {
             int lifeCount = 5;
             string[] Pair = SelectPair();
@@ -122,9 +121,35 @@ namespace Hangman_proba
             {
                 Console.WriteLine("Gratulacje !");
             }
+        }
 
-            
-            
+
+        static void Main(string[] args)
+        {
+
+            string play = "";
+            while (!(play.ToLower().Equals("n")))
+            {
+                Console.Clear();
+                Console.WriteLine("Witamy w HANGMAN.");
+                Console.WriteLine("Masz 5 punktow zycia na zgadniecie hasla.");
+                Console.WriteLine("Bledne odgadniecie pojedynczej litery to strata 1 punktu.");
+                Console.WriteLine("Jesli blednie odgadniesz cale slowo tracisz 2 punkty.");
+                Console.WriteLine("Strata 5 punktow oznacza koniec gry !");
+                Console.Write("Gramy ? [t - tak, n - nie]: ");
+
+                play = Console.ReadLine();
+                if (play.ToLower().Equals("t"))
+                {
+                    Game();
+                }
+
+            }
+
+
+
+
+
         }
     }
 }
