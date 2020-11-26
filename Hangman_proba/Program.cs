@@ -69,11 +69,18 @@ namespace Hangman_proba
             string toGuessDashed = WordToDashes(toGuess);
             string toGuessHint = Pair[0];
             string notInWord = "";
+            DateTime gameStart = DateTime.Now;
+            int guessCount = 0;
+
 
             while (lifeCount > 0)
             {
                 Console.WriteLine($"Haslo: {toGuessDashed} Pkt. zycia: {lifeCount} Litery ktorych nie ma: [{notInWord}]");
-                // Console.WriteLine($"haslo: {toGuess}");
+                if (lifeCount == 1)
+                {
+                    Console.WriteLine($"HINT: The capital of {Pair[0]}");
+                }
+                Console.WriteLine($"NIEWIDOCZNE haslo: {toGuess}");
                 string choice = "";
                 do
                 {
@@ -89,6 +96,10 @@ namespace Hangman_proba
                     if (toGuess.ToLower().Contains(letter.ToLower()))
                     {
                         toGuessDashed = UpdateDash(toGuessDashed, letter, toGuess);
+                        if (toGuessDashed.Equals(toGuess))
+                        {
+                            break;
+                        }
                     }
                     else
                     {
@@ -110,8 +121,10 @@ namespace Hangman_proba
                         lifeCount -= 2;
                     }
                 }
-
+                guessCount += 1;
             }
+
+            TimeSpan gameTime = DateTime.Now - gameStart;
 
             if (lifeCount <= 0)
             {
@@ -119,7 +132,8 @@ namespace Hangman_proba
             }
             else
             {
-                Console.WriteLine("Gratulacje !");
+                Console.WriteLine($"Gratulacje ! Zgadles haslo w {guessCount} probach. Zajelo to {gameTime.Seconds} sekund.");
+                Console.ReadLine();
             }
         }
 
@@ -136,7 +150,7 @@ namespace Hangman_proba
                 Console.WriteLine("Bledne odgadniecie pojedynczej litery to strata 1 punktu.");
                 Console.WriteLine("Jesli blednie odgadniesz cale slowo tracisz 2 punkty.");
                 Console.WriteLine("Strata 5 punktow oznacza koniec gry !");
-                Console.Write("Gramy ? [t - tak, n - nie]: ");
+                Console.Write("Gramy ? [t - tak, inny klawisz - nie]: ");
 
                 play = Console.ReadLine();
                 if (play.ToLower().Equals("t"))
