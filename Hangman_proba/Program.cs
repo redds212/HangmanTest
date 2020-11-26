@@ -28,13 +28,49 @@ namespace Hangman_proba
 
         }
 
+        static void AddHighScore(string name, DateTime time, int guesses, string word)
+        {
+            string output = $"{name} | {time} | {guesses} | {word}";
+            string filePath = "../../../highscores.txt";
+            var file = new FileInfo(filePath);
+
+            if (file.Exists)
+            {
+                StreamReader reader = new StreamReader(filePath);
+                string input = reader.ReadToEnd();
+
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    writer.Write(input);
+                    writer.WriteLine(output);
+                }
+            }
+            else
+            {
+                using (TextWriter writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine(output);
+                }
+            }
+            
+
+        }
+
         static string WordToDashes(string word)
             // zwraca string z "_" zamiast literek
         {
             string result = "";
             for (int i = 0; i < word.Length; i++)
             {
-                result += "_";
+                if (word[i] == ' ')
+                {
+                    result += " ";
+                }
+                else
+                {
+                    result += "_";
+                }
+                
             }
             return result;
         }
@@ -75,10 +111,11 @@ namespace Hangman_proba
 
             while (lifeCount > 0)
             {
+                Console.Clear();
                 Console.WriteLine($"Haslo: {toGuessDashed} Pkt. zycia: {lifeCount} Litery ktorych nie ma: [{notInWord}]");
                 if (lifeCount == 1)
                 {
-                    Console.WriteLine($"HINT: The capital of {Pair[0]}");
+                    Console.WriteLine($"HINT: The capital of {toGuessHint}");
                 }
                 Console.WriteLine($"NIEWIDOCZNE haslo: {toGuess}");
                 string choice = "";
@@ -124,23 +161,28 @@ namespace Hangman_proba
                 guessCount += 1;
             }
 
-            TimeSpan gameTime = DateTime.Now - gameStart;
+            DateTime gameEnd = DateTime.Now;
+            TimeSpan gameTime = gameEnd - gameStart;
 
             if (lifeCount <= 0)
             {
                 Console.WriteLine($"Gra przegrana! Szukane haslo to: {toGuess}");
+                Console.WriteLine("Nacisnij dowolny klawisz aby kontynuowac.");
+                Console.ReadKey();
             }
             else
             {
                 Console.WriteLine($"Gratulacje ! Zgadles haslo w {guessCount} probach. Zajelo to {gameTime.Seconds} sekund.");
-                Console.ReadLine();
+                Console.Write("Podaj swoje imie:");
+                string name = Console.ReadLine();
+                AddHighScore(name, gameEnd, guessCount, toGuess);
             }
         }
 
 
         static void Main(string[] args)
         {
-
+            
             string play = "";
             while (!(play.ToLower().Equals("n")))
             {
@@ -159,10 +201,6 @@ namespace Hangman_proba
                 }
 
             }
-
-
-
-
 
         }
     }
