@@ -28,36 +28,106 @@ namespace Hangman_proba
 
         }
 
+        static void DisplayScores()
+        {
+            string filePath = "../../../highscores.txt";
+            var file = new FileInfo(filePath);
+            if (file.Exists)
+            {
+                using (TextReader tr = new StreamReader(filePath))
+                {
+                    var highScores = tr.ReadToEnd();
+                    Console.WriteLine("---- HIGH SCORES -----");
+                    Console.WriteLine(highScores);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nie ma jeszcze high-score'ow.");
+            }
+
+        }
+
         static void AddHighScore(string name, DateTime time, int guesses, string word)
         {
-            string output = $"{name} | {time} | {guesses} | {word}";
+            string newScore = $"{name} | {time} | {guesses} | {word}";
             string filePath = "../../../highscores.txt";
             var file = new FileInfo(filePath);
 
             if (file.Exists)
             {
-                StreamReader reader = new StreamReader(filePath);
-                string input = reader.ReadToEnd();
+                int lineCount = 0;
+                string input = "";
 
-                using (StreamWriter writer = new StreamWriter(filePath))
+                using (StreamReader reader = new StreamReader(filePath))
                 {
-                    writer.Write(input);
-                    writer.WriteLine(output);
+                    var line = reader.ReadLine();
+                    while (line != null)
+                    {
+                        lineCount++;
+                        input += line + "\n";
+                        line = reader.ReadLine();
+                    }
                 }
+
+                //Console.WriteLine("ILOSC LINII:" + lineCount);
+                //Console.ReadKey();
+                //StreamReader reader = new StreamReader(filePath);
+                //string input = reader.ReadToEnd();
+
+                if (lineCount < 5)
+                {
+                    using (StreamWriter writer = new StreamWriter(filePath))
+                    {
+                        writer.Write(input);
+                        writer.WriteLine(newScore);
+                    }
+                }
+                else
+                {
+                    
+                    string[] lines = input.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    input = "";
+                    int min = guesses;
+                    string tempScore = "";
+                    tempScore = newScore;
+                    foreach (var record in lines)
+                    {
+                        int points = int.Parse(record.Split('|')[2]);
+                        if (points <= min)
+                        {
+                            input += record + "\n";
+                            //Console.WriteLine($"Zapisuje {input}");
+                        }
+                        else
+                        {
+                            input += tempScore + "\n";
+                            tempScore = record;
+                        }                       
+                    }
+
+                    using (StreamWriter writer = new StreamWriter(filePath))
+                    {
+                        writer.Write(input);                        
+                    }
+
+                    //Console.WriteLine(input);
+                    //Console.ReadKey();
+                }
+ 
             }
             else
             {
                 using (TextWriter writer = new StreamWriter(filePath))
                 {
-                    writer.WriteLine(output);
+                    writer.WriteLine(newScore);
                 }
             }
             
-
         }
 
         static string WordToDashes(string word)
-            // zwraca string z "_" zamiast literek
+            // zwraca string z "_" i " " zamiast literek
         {
             string result = "";
             for (int i = 0; i < word.Length; i++)
@@ -69,8 +139,7 @@ namespace Hangman_proba
                 else
                 {
                     result += "_";
-                }
-                
+                }  
             }
             return result;
         }
@@ -166,6 +235,8 @@ namespace Hangman_proba
 
             if (lifeCount <= 0)
             {
+                // Console.Clear();
+                DisplayScores();
                 Console.WriteLine($"Gra przegrana! Szukane haslo to: {toGuess}");
                 Console.WriteLine("Nacisnij dowolny klawisz aby kontynuowac.");
                 Console.ReadKey();
@@ -191,8 +262,8 @@ namespace Hangman_proba
                 Console.WriteLine("Masz 5 punktow zycia na zgadniecie hasla.");
                 Console.WriteLine("Bledne odgadniecie pojedynczej litery to strata 1 punktu.");
                 Console.WriteLine("Jesli blednie odgadniesz cale slowo tracisz 2 punkty.");
-                Console.WriteLine("Strata 5 punktow oznacza koniec gry !");
-                Console.Write("Gramy ? [t - tak, inny klawisz - nie]: ");
+                Console.WriteLine("Strata 5 punktow oznacza koniec gry !\n");
+                Console.Write("Gramy ? [t - tak, n - nie]: ");
 
                 play = Console.ReadLine();
                 if (play.ToLower().Equals("t"))
